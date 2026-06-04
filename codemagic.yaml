@@ -1,17 +1,23 @@
 workflows:
-  android-debug-apk:
-    name: Android Debug APK Build
-    max_build_duration: 30
-    instance_type: mac_mini_m2
+  android-workflow:
+    name: Android Release APK Build
+    max_build_duration: 60
+    instance_type: mac_mini_m1
     environment:
-      node: latest
+      node: 20
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
     scripts:
-      - name: Install dependencies
+      - name: Install npm dependencies
         script: |
           npm install
-      - name: Build Android Debug APK
+      - name: Build Android Release APK
         script: |
           cd android
-          ./gradlew assembleDebug
+          chmod +x gradlew
+          ./gradlew assembleRelease -Pandroid.experimental.self-contained-execution=false --no-daemon
     artifacts:
-      - android/app/build/outputs/apk/debug/*.apk
+      - android/app/build/outputs/apk/release/*.apk
